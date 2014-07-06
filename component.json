@@ -1,0 +1,11 @@
+{
+    "name": "serand",
+    "description": "serand component",
+    "dependencies": {
+        "visionmedia/page.js": "*"
+    },
+    "local": [],
+    "scripts": ["index.js"],
+    "templates" : [],
+    "main": "index.js"
+}

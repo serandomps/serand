@@ -2,10 +2,12 @@
     "name": "serand",
     "description": "serand component",
     "dependencies": {
-        "visionmedia/page.js": "*"
+        "visionmedia/page.js": "*",
+        "serandomps/dust": "master",
+        "serandomps/async": "master"
     },
     "local": [],
-    "scripts": ["index.js"],
-    "templates" : [],
+    "scripts": ["layout.js", "index.js"],
+    "templates": [],
     "main": "index.js"
 }

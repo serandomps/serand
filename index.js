@@ -1,4 +1,5 @@
 var page = require('page');
+var Layout = require('./layout');
 
 var listeners = [];
 
@@ -38,4 +39,33 @@ module.exports.emit = function (ch, e, data) {
     event(ch, e).forEach(function (fn) {
         fn(data);
     });
+};
+
+module.exports.page = function (path, fn) {
+    page(path, (fn ? function (ctx) {
+        exports.emit('boot', 'page', ctx);
+        fn(ctx);
+    } : null));
+};
+
+module.exports.layout = function (requir) {
+    return function (layout) {
+        var ly = new Layout(requir, layout);
+        exports.emit('boot', 'layout', ly);
+        return ly;
+    };
+};
+
+module.exports.init = function (requir) {
+    var comps = JSON.parse(requir('./component.json'));
+    comps.local.forEach(function (comp) {
+        requir(comp);
+    });
+};
+
+module.exports.current = function (path) {
+    var ctx = new page.Context(window.location.pathname + window.location.search);
+    var route = new page.Route(path);
+    route.match(ctx.path, ctx.params);
+    return ctx;
 };

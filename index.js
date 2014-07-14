@@ -48,6 +48,12 @@ module.exports.page = function (path, fn) {
     } : null));
 };
 
+module.exports.redirect = function(path) {
+    setTimeout(function() {
+        page(path);
+    }, 0);
+};
+
 module.exports.layout = function (requir) {
     return function (layout) {
         var ly = new Layout(requir, layout);

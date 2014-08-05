@@ -48,8 +48,8 @@ module.exports.page = function (path, fn) {
     } : null));
 };
 
-module.exports.redirect = function(path) {
-    setTimeout(function() {
+module.exports.redirect = function (path) {
+    setTimeout(function () {
         page(path);
     }, 0);
 };
@@ -64,9 +64,17 @@ module.exports.layout = function (requir) {
 
 module.exports.init = function (requir) {
     var comps = JSON.parse(requir('./component.json'));
-    comps.local.forEach(function (comp) {
+    comps.serand.forEach(function (comp) {
         requir(comp);
     });
+    /*var dep;
+     var deps = comps.dependencies;
+     for (dep in deps) {
+     if (deps.hasOwnProperty(dep)) {
+     console.log(dep);
+     requir(dep);
+     }
+     }*/
 };
 
 module.exports.current = function (path) {

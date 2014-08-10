@@ -73,9 +73,11 @@ module.exports.layout = function (requir) {
 
 module.exports.init = function (requir) {
     var comps = JSON.parse(requir('./component.json'));
-    comps.serand.forEach(function (comp) {
-        requir(comp);
-    });
+    if (comps.serand) {
+        comps.serand.forEach(function (comp) {
+            requir(comp);
+        });
+    }
     /*var dep;
      var deps = comps.dependencies;
      for (dep in deps) {

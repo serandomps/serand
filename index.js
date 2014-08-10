@@ -7,7 +7,7 @@ var layout;
 
 var event = function (channel, event) {
     channel = listeners[channel] || (listeners[channel] = {});
-    return channel[event] || (channel[event] = []);
+    return channel[event] || (channel[event] = { on: [], once: [] });
 };
 
 /**
@@ -17,7 +17,11 @@ var event = function (channel, event) {
  * @param fn event callback
  */
 module.exports.on = function (ch, e, fn) {
-    event(ch, e).push(fn);
+    event(ch, e).on.push(fn);
+};
+
+module.exports.once = function (ch, e, fn) {
+    event(ch, e).once.push(fn);
 };
 
 module.exports.off = function (ch, e, fn) {
@@ -36,9 +40,14 @@ module.exports.off = function (ch, e, fn) {
  * @param data event data
  */
 module.exports.emit = function (ch, e, data) {
-    event(ch, e).forEach(function (fn) {
+    var o = event(ch, e);
+    o.on.forEach(function (fn) {
         fn(data);
     });
+    o.once.forEach(function (fn) {
+        fn(data);
+    });
+    o.once = [];
 };
 
 module.exports.page = function (path, fn) {

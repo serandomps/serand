@@ -63,6 +63,10 @@ module.exports.redirect = function (path) {
     }, 0);
 };
 
+module.exports.reload = function () {
+    console.log(window.location);
+};
+
 module.exports.layout = function (requir) {
     return function (layout) {
         var ly = new Layout(requir, layout);

@@ -5,6 +5,10 @@ var listeners = [];
 
 var layout;
 
+var configs = {
+    'cdn-images': 'http://d11gtukpy8w5r2.cloudfront.net/'
+};
+
 var event = function (channel, event) {
     channel = listeners[channel] || (listeners[channel] = {});
     return channel[event] || (channel[event] = { on: [], once: [] });
@@ -98,3 +102,5 @@ module.exports.current = function (path) {
     route.match(ctx.path, ctx.params);
     return ctx;
 };
+
+module.exports.configs = configs;

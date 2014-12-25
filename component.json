@@ -3,6 +3,7 @@
     "description": "serand component",
     "dependencies": {
         "visionmedia/page.js": "*",
+        "visionmedia/node-querystring":"*",
         "serandomps/dust": "master",
         "serandomps/async": "master"
     },

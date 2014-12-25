@@ -1,4 +1,5 @@
 var page = require('page');
+var qs = require('querystring');
 var Layout = require('./layout');
 
 var listeners = [];
@@ -11,7 +12,7 @@ var configs = {
 
 var event = function (channel, event) {
     channel = listeners[channel] || (listeners[channel] = {});
-    return channel[event] || (channel[event] = { on: [], once: [] });
+    return channel[event] || (channel[event] = {on: [], once: []});
 };
 
 /**
@@ -99,7 +100,10 @@ module.exports.init = function (requir) {
 module.exports.current = function (path) {
     var ctx = new page.Context(window.location.pathname + window.location.search);
     var route = new page.Route(path);
-    route.match(ctx.path, ctx.params);
+    if (!route.match(ctx.path, ctx.params)) {
+        return null;
+    }
+    ctx.query = qs.parse(ctx.querystring);
     return ctx;
 };
 

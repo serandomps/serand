@@ -31,11 +31,14 @@ module.exports.once = function (ch, e, fn) {
 
 module.exports.off = function (ch, e, fn) {
     var arr = event(ch, e);
-    var idx = arr.indexOf(fn);
-    if (idx === -1) {
-        return;
+    var idx = arr.on.indexOf(fn);
+    if (idx !== -1) {
+        arr.on.splice(idx, 1);
     }
-    arr.splice(idx, 1);
+    idx = arr.once.indexOf(fn);
+    if (idx !== -1) {
+        arr.once.splice(idx, 1);
+    }
 };
 
 /**

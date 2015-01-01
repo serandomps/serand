@@ -2,6 +2,8 @@ var page = require('page');
 var qs = require('querystring');
 var Layout = require('./layout');
 
+require('./utils');
+
 var listeners = [];
 
 var layout;

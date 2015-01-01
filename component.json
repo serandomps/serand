@@ -3,12 +3,16 @@
     "description": "serand component",
     "dependencies": {
         "visionmedia/page.js": "*",
-        "visionmedia/node-querystring":"*",
+        "visionmedia/node-querystring": "*",
         "serandomps/dust": "master",
         "serandomps/async": "master"
     },
     "local": [],
-    "scripts": ["layout.js", "index.js"],
+    "scripts": [
+        "layout.js",
+        "index.js",
+        "utils.js"
+    ],
     "templates": [],
     "main": "index.js"
 }

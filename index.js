@@ -7,7 +7,7 @@ var listeners = [];
 var layout;
 
 var configs = {
-    'cdn-images': 'http://d11gtukpy8w5r2.cloudfront.net/'
+    'cdn-images': 'https://d11gtukpy8w5r2.cloudfront.net/'
 };
 
 var event = function (channel, event) {

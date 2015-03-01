@@ -3,22 +3,23 @@ var dust = require('dust')();
 
 var callbacks = [];
 
-var Layout = function (requir, layout) {
+var Layout = function (base, dependencies, layout) {
     this.sel = null;
     this.stack = [];
-    this.requir = requir;
+    this.base = base;
+    this.dependencies = dependencies;
     this.layout = layout;
 };
 
 Layout.prototype.render = function (fn) {
-    var stack = this.stack;
-    var requir = this.requir;
-    dust.renderSource(requir('./' + this.layout), {}, function (err, html) {
+    var layout = this;
+    var stack = layout.stack;
+    dust.renderSource(require(layout.base + '/' + layout.layout + '.html'), {}, function (err, html) {
         var tasks = [];
         var el = $(html);
         stack.forEach(function (o) {
             tasks.push(function (fn) {
-                var comp = requir(o.comp);
+                var comp = require(layout.dependencies[o.comp]);
                 var area = $(o.sel, el);
                 comp($('<div class="sandbox"></div>').appendTo(area), fn, o.opts);
             });

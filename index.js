@@ -77,29 +77,24 @@ module.exports.reload = function () {
     console.log(window.location);
 };
 
-module.exports.layout = function (requir) {
+module.exports.layout = function (base) {
+    var dep;
+    var parts;
+    var dependencies = {};
+    var comp = JSON.parse(require(base + '/component.json'));
+    var deps = comp.dependencies;
+    for (dep in deps) {
+        if (deps.hasOwnProperty(dep)) {
+            parts = dep.split('/');
+            dependencies[dep.substring(dep.indexOf('/') + 1)] = dep.replace('/', '~') + '@' + deps[dep];
+        }
+    }
+    console.log(dependencies);
     return function (layout) {
-        var ly = new Layout(requir, layout);
+        var ly = new Layout(base, dependencies, layout);
         exports.emit('boot', 'layout', ly);
         return ly;
     };
-};
-
-module.exports.init = function (requir) {
-    var comps = JSON.parse(requir('./component.json'));
-    if (comps.serand) {
-        comps.serand.forEach(function (comp) {
-            requir(comp);
-        });
-    }
-    /*var dep;
-     var deps = comps.dependencies;
-     for (dep in deps) {
-     if (deps.hasOwnProperty(dep)) {
-     console.log(dep);
-     requir(dep);
-     }
-     }*/
 };
 
 module.exports.current = function (path) {

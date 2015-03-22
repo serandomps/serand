@@ -9,7 +9,7 @@ var listeners = [];
 var layout;
 
 var configs = {
-    'cdn-images': 'https://d1vda6a1j3uyzl.cloudfront.net/'
+    'autos-images': 'https://d1vda6a1j3uyzl.cloudfront.net/'
 };
 
 var event = function (channel, event) {

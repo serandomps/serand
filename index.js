@@ -8,9 +8,7 @@ var listeners = [];
 
 var layout;
 
-var configs = {
-    'autos-images': 'https://d1vda6a1j3uyzl.cloudfront.net/'
-};
+var configs = {};
 
 var event = function (channel, event) {
     channel = listeners[channel] || (listeners[channel] = {});

@@ -10,6 +10,11 @@ var layout;
 
 var configs = {};
 
+page(function (ctx, next) {
+    ctx.query = qs.parse(ctx.querystring);
+    next();
+});
+
 var event = function (channel, event) {
     channel = listeners[channel] || (listeners[channel] = {});
     return channel[event] || (channel[event] = {on: [], once: []});

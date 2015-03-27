@@ -1,7 +1,7 @@
 var async = require('async');
 var dust = require('dust')();
 
-var callbacks = [];
+var cleaners = [];
 
 var Layout = function (base, dependencies, layout) {
     this.sel = null;
@@ -24,12 +24,22 @@ Layout.prototype.render = function (fn) {
                 comp($('<div class="sandbox"></div>').appendTo(area), fn, o.opts);
             });
         });
-        async.parallel(tasks, function (err, results) {
-            callbacks.forEach(function (callback) {
-                callback();
+        async.parallel(tasks, function (err, results, done) {
+            cleaners.forEach(function (clean) {
+                clean();
             });
-            callbacks = results;
             $('#content').html(el);
+            results.forEach(function (result) {
+                if (typeof result === 'function') {
+                    return cleaners.push(result);
+                }
+                cleaners.push(result.clean);
+                var done = result.done;
+                if (!done) {
+                    return;
+                }
+                return done();
+            });
             if (fn) {
                 fn(err, results);
             }

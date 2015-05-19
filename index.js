@@ -63,11 +63,17 @@ module.exports.emit = function (ch, e, data) {
     o.once = [];
 };
 
-module.exports.page = function (path, fn) {
-    page(path, (fn ? function (ctx) {
+module.exports.page = function () {
+    var args = Array.prototype.slice.call(arguments);
+    var done = args.pop();
+    if (typeof done !== 'function') {
+        return page.apply(page, args);
+    }
+    args.push(function (ctx) {
         exports.emit('boot', 'page', ctx);
-        fn(ctx);
-    } : null));
+        done(ctx);
+    });
+    page.apply(page, args);
 };
 
 module.exports.redirect = function (path) {

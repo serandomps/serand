@@ -65,14 +65,6 @@ module.exports.emit = function (ch, e, data) {
 
 module.exports.page = function () {
     var args = Array.prototype.slice.call(arguments);
-    var done = args.pop();
-    if (typeof done !== 'function') {
-        return page.apply(page, args);
-    }
-    args.push(function (ctx) {
-        exports.emit('boot', 'page', ctx);
-        done(ctx);
-    });
     page.apply(page, args);
 };
 
@@ -100,9 +92,7 @@ module.exports.layout = function (base) {
     }
     console.log(dependencies);
     return function (layout) {
-        var ly = new Layout(base, dependencies, layout);
-        exports.emit('boot', 'layout', ly);
-        return ly;
+        return new Layout(base, dependencies, layout);
     };
 };
 
@@ -117,3 +107,7 @@ module.exports.current = function (path) {
 };
 
 module.exports.configs = configs;
+
+module.exports.once('serand', 'ready', function () {
+    page();
+});

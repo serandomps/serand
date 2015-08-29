@@ -54,11 +54,12 @@ module.exports.off = function (ch, e, fn) {
  */
 module.exports.emit = function (ch, e, data) {
     var o = event(ch, e);
+    var args = Array.prototype.slice.call(arguments, 2);
     o.on.forEach(function (fn) {
-        fn(data);
+        fn.apply(fn, args);
     });
     o.once.forEach(function (fn) {
-        fn(data);
+        fn.apply(fn, args);
     });
     o.once = [];
 };
@@ -98,6 +99,9 @@ module.exports.layout = function (base) {
 
 module.exports.current = function (path) {
     var ctx = new page.Context(window.location.pathname + window.location.search);
+    if (!path) {
+        return ctx;
+    }
     var route = new page.Route(path);
     if (!route.match(ctx.path, ctx.params)) {
         return null;

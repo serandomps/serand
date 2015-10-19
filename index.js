@@ -6,8 +6,6 @@ require('./utils');
 
 var listeners = [];
 
-var layout;
-
 var configs = {};
 
 page(function (ctx, next) {
@@ -79,21 +77,38 @@ module.exports.reload = function () {
     console.log(window.location);
 };
 
-module.exports.layout = function (base) {
+module.exports.boot = function (base) {
     var dep;
     var parts;
+    var index;
+    var name;
+    var module;
     var dependencies = {};
     var comp = JSON.parse(require(base + '/component.json'));
     var deps = comp.dependencies;
     for (dep in deps) {
         if (deps.hasOwnProperty(dep)) {
             parts = dep.split('/');
-            dependencies[dep.substring(dep.indexOf('/') + 1)] = dep.replace('/', '~') + '@' + deps[dep];
+            index = dep.indexOf('/');
+            name = parts[1];
+            module = dep.replace('/', '~') + '@' + deps[dep];
+            dependencies[name] = module;
+            if (parts[0] !== 'serandomps') {
+                continue;
+            }
+            require(module);
         }
     }
     console.log(dependencies);
+    return {
+        base: base,
+        dependencies: dependencies
+    };
+};
+
+module.exports.layout = function (app) {
     return function (layout) {
-        return new Layout(base, dependencies, layout);
+        return new Layout(app.base, app.dependencies, layout);
     };
 };
 
@@ -114,4 +129,10 @@ module.exports.configs = configs;
 
 module.exports.once('serand', 'ready', function () {
     page();
+});
+
+$(function () {
+    $(document).on('click', '.suck', function (e) {
+        e.preventDefault();
+    });
 });

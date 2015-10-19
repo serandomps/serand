@@ -28,6 +28,7 @@ Layout.prototype.render = function (fn) {
             cleaners.forEach(function (clean) {
                 clean();
             });
+            cleaners = [];
             $('#content').html(el);
             results.forEach(function (result) {
                 if (typeof result === 'function') {

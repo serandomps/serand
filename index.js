@@ -67,9 +67,9 @@ module.exports.page = function () {
     page.apply(page, args);
 };
 
-module.exports.redirect = function (path) {
+module.exports.redirect = function (path, state) {
     setTimeout(function () {
-        page(path);
+        page(path, state);
     }, 0);
 };
 

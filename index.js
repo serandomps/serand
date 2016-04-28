@@ -137,6 +137,12 @@ $(function () {
     });
 });
 
+$(window).on('storage', function (e) {
+    e = e.originalEvent;
+    var key = e.key;
+    module.exports.emit('stored', key, module.exports.store(key));
+});
+
 module.exports.cache = function (key, val) {
     if (val) {
         sessionStorage.setItem(key, JSON.stringify(val));
@@ -159,4 +165,8 @@ module.exports.store = function (key, val) {
         localStorage.removeItem(key);
     }
     return o ? JSON.parse(o) : null;
+};
+
+module.exports.none = function () {
+
 };

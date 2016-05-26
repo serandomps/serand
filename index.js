@@ -8,6 +8,8 @@ var listeners = [];
 
 var configs = {};
 
+var serand = module.exports;
+
 page(function (ctx, next) {
     ctx.query = qs.parse(ctx.querystring);
     next();

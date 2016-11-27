@@ -21,7 +21,7 @@ Layout.prototype.render = function (fn) {
             tasks.push(function (fn) {
                 var comp = require(layout.dependencies[o.comp]);
                 var area = $(o.sel, el);
-                comp($('<div class="sandbox"></div>').appendTo(area), fn, o.opts);
+                comp($('<div class="sandbox ' + o.comp + '"></div>').appendTo(area), fn, o.opts);
             });
         });
         async.parallel(tasks, function (err, results, done) {

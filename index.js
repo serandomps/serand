@@ -4,7 +4,7 @@ var Layout = require('./layout');
 
 require('./utils');
 
-var listeners = [];
+var listeners = {};
 
 var configs = {};
 

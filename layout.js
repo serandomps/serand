@@ -15,6 +15,9 @@ Layout.prototype.render = function (fn) {
     var layout = this;
     var stack = layout.stack;
     dust.renderSource(require(layout.base + '/' + layout.layout + '.html'), {}, function (err, html) {
+        if (err) {
+            return console.error(err);
+        }
         var tasks = [];
         var el = $(html);
         stack.forEach(function (o) {
@@ -25,6 +28,9 @@ Layout.prototype.render = function (fn) {
             });
         });
         async.parallel(tasks, function (err, results, done) {
+            if (err) {
+                return console.error(err);
+            }
             cleaners.forEach(function (clean) {
                 clean();
             });
@@ -42,7 +48,7 @@ Layout.prototype.render = function (fn) {
                 return done();
             });
             if (fn) {
-                fn(err, results);
+                fn(null, results);
             }
         });
     });

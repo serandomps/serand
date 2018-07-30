@@ -11,25 +11,25 @@ var Layout = function (base, dependencies, layout) {
     this.layout = layout;
 };
 
-Layout.prototype.render = function (fn) {
+Layout.prototype.render = function (done) {
     var layout = this;
     var stack = layout.stack;
     dust.renderSource(require(layout.base + '/' + layout.layout + '.html'), {}, function (err, html) {
         if (err) {
-            return console.error(err);
+            return done(err);
         }
         var tasks = [];
         var el = $(html);
         stack.forEach(function (o) {
-            tasks.push(function (fn) {
+            tasks.push(function (done) {
                 var comp = require(layout.dependencies[o.comp]);
                 var area = $(o.sel, el);
-                comp($('<div class="sandbox ' + o.comp + '"></div>').appendTo(area), fn, o.opts);
+                comp($('<div class="sandbox ' + o.comp + '"></div>').appendTo(area), o.opts, done);
             });
         });
         async.parallel(tasks, function (err, results, done) {
             if (err) {
-                return console.error(err);
+                return done(err);
             }
             cleaners.forEach(function (clean) {
                 clean();
@@ -41,15 +41,13 @@ Layout.prototype.render = function (fn) {
                     return cleaners.push(result);
                 }
                 cleaners.push(result.clean);
-                var done = result.done;
-                if (!done) {
+                var ready = result.ready;
+                if (!ready) {
                     return;
                 }
-                return done();
+                return ready();
             });
-            if (fn) {
-                fn(null, results);
-            }
+            done(null, results);
         });
     });
     return this;

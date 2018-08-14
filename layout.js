@@ -14,6 +14,11 @@ var Layout = function (base, dependencies, layout) {
 Layout.prototype.render = function (done) {
     var layout = this;
     var stack = layout.stack;
+    done = done || function (err) {
+      if (err) {
+          return console.error(err);
+      }
+    };
     dust.renderSource(require(layout.base + '/' + layout.layout + '.html'), {}, function (err, html) {
         if (err) {
             return done(err);
@@ -27,7 +32,7 @@ Layout.prototype.render = function (done) {
                 comp($('<div class="sandbox ' + o.comp + '"></div>').appendTo(area), o.opts, done);
             });
         });
-        async.parallel(tasks, function (err, results, done) {
+        async.parallel(tasks, function (err, results) {
             if (err) {
                 return done(err);
             }

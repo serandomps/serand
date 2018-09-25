@@ -5,7 +5,8 @@
         "visionmedia/page.js": "*",
         "tj/node-querystring": "*",
         "serandomps/dust": "master",
-        "serandomps/async": "master"
+        "serandomps/async": "master",
+        "serandomps/utils": "master"
     },
     "local": [],
     "scripts": [

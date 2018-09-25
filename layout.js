@@ -3,23 +3,23 @@ var dust = require('dust')();
 
 var cleaners = [];
 
-var Layout = function (base, dependencies, layout) {
+var Layout = function (app, layout) {
     this.sel = null;
     this.stack = [];
-    this.base = base;
-    this.dependencies = dependencies;
+    this.app = app
     this.layout = layout;
 };
 
-Layout.prototype.render = function (done) {
+Layout.prototype.render = function (ctx, next) {
     var layout = this;
+    var app = layout.app;
     var stack = layout.stack;
-    done = done || function (err) {
+    var done = function (err) {
       if (err) {
-          return console.error(err);
+          return next(err);
       }
     };
-    dust.renderSource(require(layout.base + '/' + layout.layout + '.html'), {}, function (err, html) {
+    dust.renderSource(require(app.self + '/layouts/' + layout.layout + '.html'), {}, function (err, html) {
         if (err) {
             return done(err);
         }
@@ -27,9 +27,9 @@ Layout.prototype.render = function (done) {
         var el = $(html);
         stack.forEach(function (o) {
             tasks.push(function (done) {
-                var comp = require(layout.dependencies[o.comp]);
+                var comp = require(app.dependencies[o.comp]);
                 var area = $(o.sel, el);
-                comp($('<div class="sandbox ' + o.comp + '"></div>').appendTo(area), o.opts, done);
+                comp(ctx, $('<div class="sandbox ' + o.comp + '"></div>').appendTo(area), o.opts, done);
             });
         });
         async.parallel(tasks, function (err, results) {

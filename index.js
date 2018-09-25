@@ -1,5 +1,6 @@
 var page = require('page');
 var qs = require('querystring');
+var utils = require('utils');
 var Layout = require('./layout');
 
 require('./utils');
@@ -9,11 +10,6 @@ var listeners = {};
 var configs = {};
 
 var serand = module.exports;
-
-page(function (ctx, next) {
-    ctx.query = qs.parse(ctx.querystring);
-    next();
-});
 
 var event = function (channel, event) {
     channel = listeners[channel] || (listeners[channel] = {});
@@ -64,29 +60,84 @@ module.exports.emit = function (ch, e, data) {
     o.once = [];
 };
 
+var user = null;
+var ready = false;
+var pending = [];
+
+module.exports.on('user', 'ready', function (usr) {
+    user = usr;
+    ready = true;
+    if (!pending.length) {
+        return;
+    }
+    pending.forEach(function (fn) {
+        fn();
+    });
+});
+
+module.exports.on('user', 'logged in', function (usr) {
+    user = usr;
+});
+
+module.exports.on('user', 'logged out', function () {
+    user = null;
+});
+
+page(function (ctx, next) {
+    ctx.query = qs.parse(ctx.querystring);
+    next();
+});
+
+page(function (ctx, next) {
+    if (user) {
+        ctx.user = user;
+        return next();
+    }
+    if (ready) {
+        return next();
+    }
+    pending.push(function () {
+        ctx.user = user;
+        next();
+    });
+});
+
 module.exports.page = function () {
     var args = Array.prototype.slice.call(arguments);
     page.apply(page, args);
 };
 
-module.exports.redirect = function (path, state) {
+module.exports.direct = function (path, state) {
     setTimeout(function () {
         page(path, state);
     }, 0);
 };
 
-module.exports.reload = function () {
-    console.log(window.location);
+module.exports.redirect = function (path) {
+    setTimeout(function () {
+        window.location.href = path;
+    }, 0);
 };
 
-module.exports.boot = function (base) {
+module.exports.reload = function () {
+    window.location.reload(true)
+};
+
+var App = function (dependencies, options) {
+    this.options = options;
+    this.self = options.self;
+    this.from = options.from;
+    this.dependencies = dependencies;
+};
+
+module.exports.app = function (options) {
     var dep;
     var parts;
     var index;
     var name;
     var module;
     var dependencies = {};
-    var comp = JSON.parse(require(base + '/component.json'));
+    var comp = JSON.parse(require(options.self + '/component.json'));
     var deps = comp.dependencies;
     for (dep in deps) {
         if (deps.hasOwnProperty(dep)) {
@@ -95,22 +146,18 @@ module.exports.boot = function (base) {
             name = parts[1];
             module = dep.replace('/', '~') + '@' + deps[dep];
             dependencies[name] = module;
-            if (parts[0] !== 'serandomps') {
+            if (parts[0] !== options.from) {
                 continue;
             }
             require(module);
         }
     }
-    console.log(dependencies);
-    return {
-        base: base,
-        dependencies: dependencies
-    };
+    return new App(dependencies, options);
 };
 
 module.exports.layout = function (app) {
     return function (layout) {
-        return new Layout(app.base, app.dependencies, layout);
+        return new Layout(app, layout);
     };
 };
 

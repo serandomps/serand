@@ -9,7 +9,9 @@ var listeners = {};
 
 var configs = {};
 
-var serand = module.exports;
+var caches = {
+    page: {}
+};
 
 var event = function (channel, event) {
     channel = listeners[channel] || (listeners[channel] = {});
@@ -81,6 +83,11 @@ module.exports.on('user', 'logged in', function (usr) {
 
 module.exports.on('user', 'logged out', function () {
     user = null;
+});
+
+page(function (ctx, next) {
+    caches.page = {};
+    next();
 });
 
 page(function (ctx, next) {
@@ -202,6 +209,21 @@ module.exports.cache = function (key, val) {
     }
     val = sessionStorage.getItem(key);
     return val ? JSON.parse(val) : null;
+};
+
+exports.cached = function (type, id, run, done) {
+    utils.sync(type + '-' + id, function (did) {
+        var cache = caches[type] || (caches[type] = {});
+        var args = cache[id];
+        if (args) {
+            return did.apply(null, args);
+        }
+        run(function () {
+            var args = Array.prototype.slice.call(arguments);
+            cache[id] = args;
+            did.apply(null, args);
+        });
+    }, done);
 };
 
 module.exports.store = function (key, val) {

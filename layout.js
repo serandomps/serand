@@ -25,11 +25,15 @@ Layout.prototype.render = function (ctx, next) {
         }
         var tasks = [];
         var el = $(html);
+        var id = 0;
         stack.forEach(function (o) {
             tasks.push(function (done) {
                 var comp = require(app.dependencies[o.comp]);
                 var area = $(o.sel, el);
-                comp(ctx, $('<div class="sandbox ' + o.comp + '"></div>').appendTo(area), o.opts, done);
+                comp(ctx, {
+                    id: o.comp + '-' + id++,
+                    sandbox: $('<div class="sandbox ' + o.comp + '"></div>').appendTo(area)
+                }, o.opts, done);
             });
         });
         async.parallel(tasks, function (err, results) {

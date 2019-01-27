@@ -2,6 +2,7 @@ var page = require('page');
 var qs = require('querystring');
 var utils = require('utils');
 var Layout = require('./layout');
+var themes = require('themes');
 
 require('./utils');
 
@@ -166,6 +167,10 @@ module.exports.layout = function (app) {
     return function (layout) {
         return new Layout(app, layout);
     };
+};
+
+module.exports.blocks = function (block, action, elem, o, done) {
+    themes.blocks(block, action, elem, o, done);
 };
 
 module.exports.current = function (path) {

@@ -1,5 +1,6 @@
 var async = require('async');
 var dust = require('dust')();
+var themes = require('themes');
 
 var cleaners = [];
 
@@ -40,23 +41,28 @@ Layout.prototype.render = function (ctx, next) {
             if (err) {
                 return done(err);
             }
-            cleaners.forEach(function (clean) {
-                clean();
-            });
-            cleaners = [];
-            $('#content').html(el);
-            results.forEach(function (result) {
-                if (typeof result === 'function') {
-                    return cleaners.push(result);
+            themes.clean(function (err) {
+                if (err) {
+                    return done(err);
                 }
-                cleaners.push(result.clean);
-                var ready = result.ready;
-                if (!ready) {
-                    return;
-                }
-                return ready();
+                cleaners.forEach(function (clean) {
+                    clean();
+                });
+                cleaners = [];
+                $('#content').html(el);
+                results.forEach(function (result) {
+                    if (typeof result === 'function') {
+                        return cleaners.push(result);
+                    }
+                    cleaners.push(result.clean);
+                    var ready = result.ready;
+                    if (!ready) {
+                        return;
+                    }
+                    return ready();
+                });
+                done(null, results);
             });
-            done(null, results);
         });
     });
     return this;

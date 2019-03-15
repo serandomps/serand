@@ -3,6 +3,7 @@ var qs = require('querystring');
 var utils = require('utils');
 var Layout = require('./layout');
 var themes = require('themes');
+var store = require('store');
 
 require('./utils');
 
@@ -13,6 +14,8 @@ var configs = {};
 var caches = {
     page: {}
 };
+
+var states = {};
 
 var event = function (channel, event) {
     channel = listeners[channel] || (listeners[channel] = {});
@@ -87,7 +90,9 @@ module.exports.on('user', 'logged out', function () {
 });
 
 page(function (ctx, next) {
-    caches.page = {};
+    caches.page = {
+        ctx: ctx
+    };
     next();
 });
 
@@ -110,19 +115,52 @@ page(function (ctx, next) {
     });
 });
 
+page(function (ctx, next) {
+    var id = ctx.query.from;
+    if (!id) {
+        return next();
+    }
+    var from = store.cache(id, null);
+    if (!from) {
+        return next();
+    }
+    ctx.from = from;
+    next();
+});
+
 module.exports.page = function () {
     var args = Array.prototype.slice.call(arguments);
     page.apply(page, args);
 };
 
-module.exports.direct = function (path, state) {
+module.exports.redirect = function (path, query, state, from) {
     setTimeout(function () {
-        page(path, state);
-    }, 0);
-};
-
-module.exports.redirect = function (path) {
-    setTimeout(function () {
+        var ctx = caches.page.ctx;
+        var to = ctx.query.from;
+        query = query || {};
+        if (to) {
+            window.location.href = utils.query(to, query);
+            return;
+        }
+        var id;
+        var url;
+        if (from) {
+            id = utils.id();
+            store.cache(id, from);
+            url = utils.url();
+            url = utils.query(url, {to: id});
+            query.from = url;
+        }
+        path = utils.resolve(utils.query(path, query));
+        if (!/(http(s?)):\/\//gi.test(path)) {
+            return page(path, state);
+        }
+        var current = utils.url();
+        var index = current.indexOf('://') + 3;
+        var origin = current.substring(0, current.substring(index).indexOf('/') + index);
+        if (path.indexOf(origin) === 0) {
+            return page(path, state);
+        }
         window.location.href = path;
     }, 0);
 };

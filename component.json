@@ -7,7 +7,8 @@
         "serandomps/dust": "master",
         "serandomps/themes": "master",
         "serandomps/async": "master",
-        "serandomps/utils": "master"
+        "serandomps/utils": "master",
+        "serandomps/store": "master"
     },
     "local": [],
     "scripts": [

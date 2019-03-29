@@ -26,14 +26,20 @@ Layout.prototype.render = function (ctx, next) {
         }
         var tasks = [];
         var el = $(html);
-        var id = 0;
+        var counter = 0;
         stack.forEach(function (o) {
             tasks.push(function (done) {
-                var comp = require(app.dependencies[o.comp]);
+                var comp = require(app.dependencies[o.comp] || app.self);
                 var area = $(o.sel, el);
-                comp(ctx, {
-                    id: o.comp + '-' + id++,
-                    sandbox: $('<div class="sandbox ' + o.comp + '"></div>').appendTo(area)
+                var block = o.block ? comp[o.block] : comp;
+                var id = o.comp + (o.block ? '-' + o.block : '') + '-' + counter++;
+                var css = 'sandbox-' + o.comp;
+                if (o.block) {
+                    css += ' sandbox-' + o.comp + '-' + o.block;
+                }
+                block(ctx, {
+                    id: id,
+                    sandbox: $('<div class="sandbox ' + css + '"></div>').appendTo(area)
                 }, o.opts, done);
             });
         });
@@ -73,10 +79,12 @@ Layout.prototype.area = function (sel) {
     return this;
 };
 
-Layout.prototype.add = function (comp, opts) {
+Layout.prototype.add = function (block, opts) {
+    var parts = block.split(':');
     this.stack.push({
         sel: this.sel,
-        comp: comp,
+        comp: parts[0],
+        block: parts[1],
         opts: opts
     });
     return this;

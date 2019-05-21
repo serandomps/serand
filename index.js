@@ -174,6 +174,7 @@ var App = function (dependencies, options) {
     this.self = options.self;
     this.from = options.from;
     this.dependencies = dependencies;
+    this.serand = module.exports;
 };
 
 module.exports.app = function (options) {

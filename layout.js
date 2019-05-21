@@ -19,6 +19,7 @@ Layout.prototype.render = function (ctx, next) {
       if (err) {
           return next(err);
       }
+      app.serand.emit('page', 'ready');
     };
     dust.renderSource(require(app.self + '/layouts/' + layout.layout + '.html'), {}, function (err, html) {
         if (err) {

@@ -1,4 +1,3 @@
-var async = require('async');
 var dust = require('dust')();
 var themes = require('themes');
 

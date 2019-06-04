@@ -40,7 +40,7 @@ Layout.prototype.render = function (ctx, next) {
                 block(ctx, {
                     id: id,
                     sandbox: $('<div class="sandbox ' + css + '"></div>').appendTo(area)
-                }, o.opts, done);
+                }, o.opts || {}, done);
             });
         });
         async.parallel(tasks, function (err, results) {

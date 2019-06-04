@@ -66,12 +66,13 @@ module.exports.emit = function (ch, e, data) {
     o.once = [];
 };
 
-var user = null;
 var ready = false;
 var pending = [];
 
-module.exports.on('user', 'ready', function (usr) {
-    user = usr;
+module.exports.on('user', 'ready', function (tk) {
+    console.log('user ready', tk)
+    sera.token = tk;
+    sera.user = tk && tk.user;
     ready = true;
     if (!pending.length) {
         return;
@@ -81,12 +82,16 @@ module.exports.on('user', 'ready', function (usr) {
     });
 });
 
-module.exports.on('user', 'logged in', function (usr) {
-    user = usr;
+module.exports.on('user', 'logged in', function (tk) {
+    console.log('user logged in', tk)
+    sera.token = tk;
+    sera.user = tk.user;
 });
 
 module.exports.on('user', 'logged out', function () {
-    user = null;
+    console.log('user logged out')
+    delete sera.token;
+    delete sera.user;
 });
 
 page(function (ctx, next) {
@@ -102,15 +107,20 @@ page(function (ctx, next) {
 });
 
 page(function (ctx, next) {
-    if (user) {
-        ctx.user = user;
+    if (sera.token) {
+        ctx.token = sera.token;
+        ctx.user = sera.token.user;
         return next();
     }
     if (ready) {
         return next();
     }
     pending.push(function () {
-        ctx.user = user;
+        if (!sera.token) {
+            return next();
+        }
+        ctx.token = sera.token;
+        ctx.user = sera.token.user;
         next();
     });
 });

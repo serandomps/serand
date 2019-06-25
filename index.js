@@ -295,3 +295,14 @@ module.exports.store = function (key, val) {
 module.exports.none = function () {
 
 };
+
+module.exports.pack = function (o, container) {
+    if (!container) {
+        return o;
+    }
+    var _ = o._ || (o._ = {});
+    _.container = container.id;
+    _.sandbox = container.sandbox;
+    _.parent = container.parent;
+    return o;
+};

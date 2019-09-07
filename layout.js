@@ -15,10 +15,10 @@ Layout.prototype.render = function (ctx, next) {
     var app = layout.app;
     var stack = layout.stack;
     var done = function (err) {
-      if (err) {
-          return next(err);
-      }
-      app.serand.emit('page', 'ready');
+        if (err) {
+            return next(err);
+        }
+        app.serand.emit('page', 'ready');
     };
     dust.renderSource(require(app.self + '/layouts/' + layout.layout + '.html'), {}, function (err, html) {
         if (err) {
@@ -55,7 +55,7 @@ Layout.prototype.render = function (ctx, next) {
                     clean();
                 });
                 cleaners = [];
-                $('#content').html(el);
+                $('html').find('#content').html(el).end().scrollTop(0);
                 results.forEach(function (result) {
                     if (typeof result === 'function') {
                         return cleaners.push(result);

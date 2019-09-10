@@ -29,9 +29,15 @@ Layout.prototype.render = function (ctx, next) {
         var counter = 0;
         stack.forEach(function (o) {
             tasks.push(function (done) {
+                var err;
                 var comp = require(app.dependencies[o.comp] || app.self);
                 var area = $(o.sel, el);
                 var block = o.block ? comp[o.block] : comp;
+                if (!block) {
+                    err = new Error('No block found with the name \'' + (o.block || comp) + '\'');
+                    console.error(err);
+                    return done(err);
+                }
                 var id = o.comp + (o.block ? '-' + o.block : '') + '-' + counter++;
                 var css = 'sandbox-' + o.comp;
                 if (o.block) {

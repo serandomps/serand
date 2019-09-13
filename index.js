@@ -300,6 +300,7 @@ module.exports.pack = function (o, container) {
     if (!container) {
         return o;
     }
+    o = utils.clone(o);
     var _ = o._ || (o._ = {});
     _.container = container.id;
     _.sandbox = container.sandbox;

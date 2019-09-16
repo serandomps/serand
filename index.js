@@ -7,69 +7,16 @@ var store = require('store');
 
 require('./utils');
 
-var listeners = {};
-
 var configs = {};
 
 var caches = {
     page: {}
 };
 
-var states = {};
-
-var event = function (channel, event) {
-    channel = listeners[channel] || (listeners[channel] = {});
-    return channel[event] || (channel[event] = {on: [], once: []});
-};
-
-/**
- * Registers an event listner for the specified channel
- * @param ch channel name
- * @param e event name
- * @param done event callback
- */
-module.exports.on = function (ch, e, done) {
-    event(ch, e).on.push(done);
-};
-
-module.exports.once = function (ch, e, done) {
-    event(ch, e).once.push(done);
-};
-
-module.exports.off = function (ch, e, done) {
-    var arr = event(ch, e);
-    var idx = arr.on.indexOf(done);
-    if (idx !== -1) {
-        arr.on.splice(idx, 1);
-    }
-    idx = arr.once.indexOf(done);
-    if (idx !== -1) {
-        arr.once.splice(idx, 1);
-    }
-};
-
-/**
- * Emits the specified event on the specified channel
- * @param ch channel name
- * @param e event name
- * @param data event data
- */
-module.exports.emit = function (ch, e, data) {
-    var o = event(ch, e);
-    var args = Array.prototype.slice.call(arguments, 2);
-    o.on.forEach(function (done) {
-        done.apply(done, args);
-    });
-    o.once.forEach(function (done) {
-        done.apply(done, args);
-    });
-    o.once = [];
-};
-
 var ready = false;
 var pending = [];
 
-module.exports.on('user', 'ready', function (tk) {
+utils.on('user', 'ready', function (tk) {
     console.log('user ready', tk)
     sera.token = tk;
     sera.user = tk && tk.user;
@@ -82,13 +29,13 @@ module.exports.on('user', 'ready', function (tk) {
     });
 });
 
-module.exports.on('user', 'logged in', function (tk) {
+utils.on('user', 'logged in', function (tk) {
     console.log('user logged in', tk)
     sera.token = tk;
     sera.user = tk.user;
 });
 
-module.exports.on('user', 'logged out', function () {
+utils.on('user', 'logged out', function () {
     console.log('user logged out')
     delete sera.token;
     delete sera.user;
@@ -175,8 +122,12 @@ module.exports.redirect = function (path, query, state, from) {
     }, 0);
 };
 
-module.exports.reload = function () {
-    window.location.reload(true)
+module.exports.reload = function (force) {
+    if (force) {
+        return window.location.reload(true);
+    }
+    var self = utils.url();
+    module.exports.redirect(self);
 };
 
 var App = function (dependencies, options) {
@@ -237,7 +188,7 @@ module.exports.current = function (path) {
 
 module.exports.configs = configs;
 
-module.exports.once('serand', 'ready', function () {
+utils.once('serand', 'ready', function () {
     page();
 });
 
@@ -250,7 +201,7 @@ $(function () {
 $(window).on('storage', function (e) {
     e = e.originalEvent;
     var key = e.key;
-    module.exports.emit('stored', key, module.exports.store(key));
+    utils.emit('stored', key, module.exports.store(key));
 });
 
 module.exports.cache = function (key, val) {

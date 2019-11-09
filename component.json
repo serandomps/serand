@@ -13,7 +13,8 @@
     "scripts": [
         "layout.js",
         "index.js",
-        "utils.js"
+        "utils.js",
+        "most-visible.js"
     ],
     "templates": [],
     "main": "index.js"

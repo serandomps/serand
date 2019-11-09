@@ -7,6 +7,8 @@ var store = require('store');
 
 require('./utils');
 
+require('./most-visible');
+
 var configs = {};
 
 var caches = {
@@ -202,6 +204,33 @@ $(window).on('storage', function (e) {
     e = e.originalEvent;
     var key = e.key;
     utils.emit('stored', key, module.exports.store(key));
+});
+
+$(window).on('scroll', function () {
+    var el = $(window);
+    var winHeight = el.height();
+    var scrollTop = el.scrollTop();
+    var docHeight = $(document).height();
+    var isBottom = (scrollTop + winHeight === docHeight);
+    utils.emit('serand', 'scrolled', {
+        docHeight: docHeight,
+        winHeight: winHeight,
+        scrollTop: scrollTop
+    });
+    if (isBottom) {
+        utils.emit('serand', 'scrolled down');
+    }
+    if (scrollTop === 0) {
+        utils.emit('serand', 'scrolled up');
+    }
+});
+
+utils.on('serand', 'scroll top', function () {
+    $(window).scrollTop(0);
+});
+
+utils.on('serand', 'scroll bottom', function () {
+    $(window).scrollTop($(document).height() - $(window).height() - 1);
 });
 
 module.exports.cache = function (key, val) {

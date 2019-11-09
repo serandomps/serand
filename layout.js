@@ -62,7 +62,13 @@ Layout.prototype.render = function (ctx, next) {
                     clean();
                 });
                 cleaners = [];
-                $('html').find('#content').html(el).end().scrollTop(0);
+                var html = $('html').find('#content').html(el).end();
+                var state = ctx.state;
+                if (!state.backed) {
+                    html.scrollTop(0);
+                }
+                state.backed = true;
+                ctx.save();
                 results.forEach(function (result) {
                     if (typeof result === 'function') {
                         return cleaners.push(result);

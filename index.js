@@ -209,13 +209,16 @@ $(window).on('storage', function (e) {
 $(window).on('scroll', function () {
     var el = $(window);
     var winHeight = el.height();
+    var winWidth = el.width();
     var scrollTop = el.scrollTop();
     var docHeight = $(document).height();
     var isBottom = (scrollTop + winHeight === docHeight);
     utils.emit('serand', 'scrolled', {
         docHeight: docHeight,
         winHeight: winHeight,
-        scrollTop: scrollTop
+        winWidth: winWidth,
+        scrollTop: scrollTop,
+        at: Date.now()
     });
     if (isBottom) {
         utils.emit('serand', 'scrolled down');

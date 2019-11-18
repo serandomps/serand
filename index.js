@@ -87,6 +87,13 @@ page(function (ctx, next) {
     next();
 });
 
+page(function (ctx, next) {
+    var state = ctx.state;
+    var delay = state._ && state._.delay;
+    utils.loading(delay);
+    next();
+});
+
 module.exports.page = function () {
     var args = Array.prototype.slice.call(arguments);
     page.apply(page, args);

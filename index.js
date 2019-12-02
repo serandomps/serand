@@ -182,17 +182,9 @@ module.exports.blocks = function (block, action, elem, o, done) {
     themes.blocks(block, action, elem, o, done);
 };
 
-module.exports.current = function (path) {
-    var ctx = new page.Context(window.location.pathname + window.location.search);
-    if (!path) {
-        return ctx;
-    }
-    var route = new page.Route(path);
-    if (!route.match(ctx.path, ctx.params)) {
-        return null;
-    }
-    ctx.query = qs.parse(ctx.querystring);
-    return ctx;
+module.exports.path = function () {
+    var location = window.location;
+    return location.pathname + location.search + (location.hash || '');
 };
 
 module.exports.configs = configs;

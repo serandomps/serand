@@ -79,7 +79,7 @@ page(function (ctx, next) {
     if (!id) {
         return next();
     }
-    var from = store.cache(id, null);
+    var from = module.exports.cache(id, null);
     if (!from) {
         return next();
     }
@@ -112,7 +112,7 @@ module.exports.redirect = function (path, query, state, from) {
         var url;
         if (from) {
             id = utils.id();
-            store.cache(id, from);
+            module.exports.cache(id, from);
             url = utils.url();
             url = utils.query(url, {to: id});
             query.from = url;
@@ -202,7 +202,7 @@ $(function () {
 $(window).on('storage', function (e) {
     e = e.originalEvent;
     var key = e.key;
-    utils.emit('stored', key, module.exports.store(key));
+    utils.emit('stored', key, module.exports.persist(key));
 });
 
 $(window).on('scroll', function () {
@@ -262,16 +262,12 @@ exports.cached = function (type, id, run, done) {
     }, done);
 };
 
-module.exports.store = function (key, val) {
-    if (val) {
-        localStorage.setItem(key, JSON.stringify(val));
-        return val;
-    }
-    var o = localStorage.getItem(key);
-    if (val === null) {
-        localStorage.removeItem(key);
-    }
-    return o ? JSON.parse(o) : null;
+module.exports.persist = function (key, val) {
+    return store.persist(key, val);
+};
+
+module.exports.cache = function (key, val) {
+    return store.cache(key, val);
 };
 
 module.exports.none = function () {

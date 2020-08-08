@@ -44,6 +44,7 @@ utils.on('user', 'logged out', function () {
 });
 
 page(function (ctx, next) {
+    utils.emit('page', 'bootstrap', ctx);
     caches.page = {
         ctx: ctx
     };
@@ -205,7 +206,7 @@ $(window).on('storage', function (e) {
     utils.emit('stored', key, module.exports.persist(key));
 });
 
-$(window).on('scroll', function () {
+var scroll = function () {
     var el = $(window);
     var winHeight = el.height();
     var winWidth = el.width();
@@ -225,6 +226,18 @@ $(window).on('scroll', function () {
     if (scrollTop === 0) {
         utils.emit('serand', 'scrolled up');
     }
+};
+
+utils.on('page', 'bootstrap', function (ctx) {
+    var state = ctx.state;
+    $(window).off('scroll', scroll);
+    if (state.backed) {
+        $('#content').hide();
+    }
+});
+
+utils.on('page', 'ready', function () {
+    $(window).on('scroll', scroll);
 });
 
 utils.on('serand', 'scroll top', function () {

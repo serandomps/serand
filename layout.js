@@ -62,7 +62,9 @@ Layout.prototype.render = function (ctx, next) {
                     clean();
                 });
                 cleaners = [];
-                var html = $('html').find('#content').html(el).end();
+                var html = $('html');
+                var content = html.find('#content');
+                content.show().html(el);
                 var state = ctx.state;
                 if (!state.backed) {
                     html.scrollTop(0);

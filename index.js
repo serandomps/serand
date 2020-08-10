@@ -206,13 +206,17 @@ $(window).on('storage', function (e) {
     utils.emit('stored', key, module.exports.persist(key));
 });
 
+var scrolledDown = false;
+var scrolledUp = false;
+var scrollBuffer = 2;
+
 var scroll = function () {
     var el = $(window);
     var winHeight = el.height();
     var winWidth = el.width();
     var scrollTop = el.scrollTop();
     var docHeight = $(document).height();
-    var isBottom = (scrollTop + winHeight === docHeight);
+    
     utils.emit('serand', 'scrolled', {
         docHeight: docHeight,
         winHeight: winHeight,
@@ -220,10 +224,22 @@ var scroll = function () {
         scrollTop: scrollTop,
         at: Date.now()
     });
-    if (isBottom) {
+
+    var down = (docHeight - (scrollTop + winHeight)) <= scrollBuffer;
+    if (!down) {
+        scrolledDown = false;
+    }
+    if (!scrolledDown && down) {
+        scrolledDown = true;
         utils.emit('serand', 'scrolled down');
     }
-    if (scrollTop === 0) {
+
+    var up = scrollTop <= scrollBuffer;
+    if (!up) {
+        scrolledUp = false;
+    }
+    if (!scrolledUp && up) {
+        scrolledUp = true;
         utils.emit('serand', 'scrolled up');
     }
 };

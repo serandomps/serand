@@ -208,7 +208,7 @@ $(window).on('storage', function (e) {
 
 var scrolledDown = false;
 var scrolledUp = false;
-var scrollBuffer = 2;
+var scrollBuffer = 100;
 
 var scroll = function () {
     var el = $(window);
@@ -216,7 +216,7 @@ var scroll = function () {
     var winWidth = el.width();
     var scrollTop = el.scrollTop();
     var docHeight = $(document).height();
-    
+
     utils.emit('serand', 'scrolled', {
         docHeight: docHeight,
         winHeight: winHeight,

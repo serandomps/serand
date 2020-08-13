@@ -208,7 +208,7 @@ $(window).on('storage', function (e) {
 
 var scrolledDown = false;
 var scrolledUp = false;
-var scrollBuffer = 100;
+var scrolledUpBuffer = 10;
 
 var scroll = function () {
     var el = $(window);
@@ -216,6 +216,7 @@ var scroll = function () {
     var winWidth = el.width();
     var scrollTop = el.scrollTop();
     var docHeight = $(document).height();
+    var scrolledDownBuffer = winHeight;
 
     utils.emit('serand', 'scrolled', {
         docHeight: docHeight,
@@ -225,7 +226,7 @@ var scroll = function () {
         at: Date.now()
     });
 
-    var down = (docHeight - (scrollTop + winHeight)) <= scrollBuffer;
+    var down = (docHeight - (scrollTop + winHeight)) <= scrolledDownBuffer;
     if (!down) {
         scrolledDown = false;
     }
@@ -234,7 +235,7 @@ var scroll = function () {
         utils.emit('serand', 'scrolled down');
     }
 
-    var up = scrollTop <= scrollBuffer;
+    var up = scrollTop <= scrolledUpBuffer;
     if (!up) {
         scrolledUp = false;
     }

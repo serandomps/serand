@@ -1,6 +1,7 @@
 var page = require('page');
 var qs = require('querystring');
 var utils = require('utils');
+var watcher = require('watcher');
 var Layout = require('./layout');
 var themes = require('themes');
 var store = require('store');
@@ -18,7 +19,11 @@ var caches = {
 var ready = false;
 var pending = [];
 
-utils.on('user', 'ready', function (tk) {
+watcher.once('user', 'ready', function () {
+    page();
+});
+
+watcher.on('user', 'ready', function (tk) {
     console.log('user ready', tk)
     sera.token = tk;
     sera.user = tk && tk.user;
@@ -31,20 +36,20 @@ utils.on('user', 'ready', function (tk) {
     });
 });
 
-utils.on('user', 'logged in', function (tk) {
+watcher.on('user', 'logged in', function (tk) {
     console.log('user logged in', tk)
     sera.token = tk;
     sera.user = tk.user;
 });
 
-utils.on('user', 'logged out', function () {
+watcher.on('user', 'logged out', function () {
     console.log('user logged out')
     delete sera.token;
     delete sera.user;
 });
 
 page(function (ctx, next) {
-    utils.emit('page', 'bootstrap', ctx);
+    watcher.emit('page', 'bootstrap', ctx);
     caches.page = {
         ctx: ctx
     };
@@ -190,10 +195,6 @@ module.exports.path = function () {
 
 module.exports.configs = configs;
 
-utils.once('serand', 'ready', function () {
-    page();
-});
-
 $(function () {
     $(document).on('click', '.suck', function (e) {
         e.preventDefault();
@@ -203,7 +204,7 @@ $(function () {
 $(window).on('storage', function (e) {
     e = e.originalEvent;
     var key = e.key;
-    utils.emit('stored', key, module.exports.persist(key));
+    watcher.emit('stored', key, module.exports.persist(key));
 });
 
 var scrolledDown = false;
@@ -218,7 +219,7 @@ var scroll = function () {
     var docHeight = $(document).height();
     var scrolledDownBuffer = winHeight;
 
-    utils.emit('serand', 'scrolled', {
+    watcher.emit('serand', 'scrolled', {
         docHeight: docHeight,
         winHeight: winHeight,
         winWidth: winWidth,
@@ -232,7 +233,7 @@ var scroll = function () {
     }
     if (!scrolledDown && down) {
         scrolledDown = true;
-        utils.emit('serand', 'scrolled down');
+        watcher.emit('serand', 'scrolled down');
     }
 
     var up = scrollTop <= scrolledUpBuffer;
@@ -241,11 +242,11 @@ var scroll = function () {
     }
     if (!scrolledUp && up) {
         scrolledUp = true;
-        utils.emit('serand', 'scrolled up');
+        watcher.emit('serand', 'scrolled up');
     }
 };
 
-utils.on('page', 'bootstrap', function (ctx) {
+watcher.on('page', 'bootstrap', function (ctx) {
     var state = ctx.state;
     $(window).off('scroll', scroll);
     if (state.backed) {
@@ -253,15 +254,15 @@ utils.on('page', 'bootstrap', function (ctx) {
     }
 });
 
-utils.on('page', 'ready', function () {
+watcher.on('page', 'ready', function () {
     $(window).on('scroll', scroll);
 });
 
-utils.on('serand', 'scroll top', function () {
+watcher.on('serand', 'scroll top', function () {
     $(window).scrollTop(0);
 });
 
-utils.on('serand', 'scroll bottom', function () {
+watcher.on('serand', 'scroll bottom', function () {
     $(window).scrollTop($(document).height() - $(window).height() - 1);
 });
 

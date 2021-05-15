@@ -1,6 +1,6 @@
 var dust = require('dust')();
 var themes = require('themes');
-var utils = require('utils');
+var watcher = require('watcher');
 
 var cleaners = [];
 
@@ -19,7 +19,7 @@ Layout.prototype.render = function (ctx, next) {
         if (err) {
             return next(err);
         }
-        utils.emit('page', 'ready');
+        watcher.emit('page', 'ready');
     };
     dust.renderSource(require(app.self + '/layouts/' + layout.layout + '.html'), {}, function (err, html) {
         if (err) {
